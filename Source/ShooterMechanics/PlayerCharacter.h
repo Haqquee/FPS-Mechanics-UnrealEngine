@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "PlayerCharacter.generated.h"
 
+
 UCLASS()
 class SHOOTERMECHANICS_API APlayerCharacter : public ACharacter
 {
@@ -14,7 +15,7 @@ class SHOOTERMECHANICS_API APlayerCharacter : public ACharacter
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* PlayerCamera;
 
-	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
+	UPROPERTY(VisibleDefaultsOnly, BluePrintReadOnly, Category = Mesh, meta = (AllowPrivateAccess = "true"))
 	class USkeletalMeshComponent* FPSMesh;
 
 public:
@@ -30,6 +31,23 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* LookAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* SprintAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float DefaultSpeed;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float SprintSpeed;
+
+	// Testing Projectile Fire Functionality (To be implemented in a seperate 'Weapon' class later)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* FireAction;
+
+	// Weapons
+	// UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
+	// TArray<TSubclassOf<class AWeapon>> Weapons;
 	
 
 public:
@@ -49,6 +67,13 @@ public:
 
 	void Look(const struct FInputActionValue& Value);
 	void Move(const struct FInputActionValue& Value);
+
+	UFUNCTION()
+	void Fire();
+
+	void StartSprint();
+
+	void StopSprint();
 
 
 };

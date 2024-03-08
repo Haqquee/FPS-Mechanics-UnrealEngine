@@ -6,6 +6,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Components/CapsuleComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -24,17 +25,24 @@ APlayerCharacter::APlayerCharacter()
 
 	// First Person Mesh
 	FPSMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("FirstPersonMesh"));
-	FPSMesh->SetOnlyOwnerSee(true);
 	FPSMesh->SetupAttachment(PlayerCamera);
+	FPSMesh->SetOnlyOwnerSee(true);
 	FPSMesh->bCastDynamicShadow = false;
 	FPSMesh->CastShadow = false;
-	
+
+	// Movement
+	DefaultSpeed = 100.f;
+	SprintSpeed = 2000.f;
+	GetCharacterMovement()->MaxWalkSpeed = DefaultSpeed;
+ 	
 }
 
 // Called when the game starts or when spawned
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	UE_LOG(LogTemp, Warning, TEXT("Start"));
 
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
 	{
@@ -43,6 +51,14 @@ void APlayerCharacter::BeginPlay()
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
 	}
+
+	/*for (const TSubclassOf<AWeapon>& Weapon : Weapons)
+	{
+		if (!Weapon) continue;
+		FActorSpawnParameters Parameters;
+		Parameters.Owner = this;
+		AWeapon* SpawnedWeapon = GetWorld()->SpawnActor<AWeapon>(Weapon, Parameters);
+	}*/
 	
 }
 
@@ -63,8 +79,9 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInput->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 	PlayerInput->BindAction(LookAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Look);
 	PlayerInput->BindAction(MoveAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Move);
-	
-
+	PlayerInput->BindAction(FireAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Fire);
+	PlayerInput->BindAction(SprintAction, ETriggerEvent::Started, this, &APlayerCharacter::StartSprint);
+	PlayerInput->BindAction(SprintAction, ETriggerEvent::Completed, this, &APlayerCharacter::StopSprint);
 
 }
 
@@ -79,6 +96,7 @@ void APlayerCharacter::Move(const struct FInputActionValue& Value)
 	}
 }
 
+
 void APlayerCharacter::Look(const struct FInputActionValue& Value)
 {
 	FVector2D LookVector = Value.Get<FVector2D>();
@@ -88,5 +106,22 @@ void APlayerCharacter::Look(const struct FInputActionValue& Value)
 		AddControllerYawInput(LookVector.X);
 		AddControllerPitchInput(LookVector.Y);
 	}
+}
+
+void APlayerCharacter::Fire()
+{
+
+}
+
+void APlayerCharacter::StartSprint()
+{
+	GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
+	UE_LOG(LogTemp, Warning, TEXT("Sprint Start"));
+}
+
+void APlayerCharacter::StopSprint()
+{
+	GetCharacterMovement()->MaxWalkSpeed = DefaultSpeed;
+	UE_LOG(LogTemp, Warning, TEXT("Sprint End"));
 }
 
