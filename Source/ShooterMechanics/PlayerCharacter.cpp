@@ -7,6 +7,8 @@
 #include "EnhancedInputSubsystems.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "ShooterMechanics\Weapon.h"
+
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -31,10 +33,18 @@ APlayerCharacter::APlayerCharacter()
 	FPSMesh->CastShadow = false;
 
 	// Movement
-	DefaultSpeed = 100.f;
-	SprintSpeed = 2000.f;
+	DefaultSpeed = 600.f;
+	SprintSpeed = 1000.f;
 	GetCharacterMovement()->MaxWalkSpeed = DefaultSpeed;
- 	
+
+	// Weapon
+	HasWeapon = false;
+
+
+	const FTransform GripSocket = GetFPSMesh()->GetSocketTransform(FName(TEXT("GripPoint")), ERelativeTransformSpace::RTS_World);
+	//
+	
+	
 }
 
 // Called when the game starts or when spawned
@@ -51,14 +61,11 @@ void APlayerCharacter::BeginPlay()
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
 	}
+	
+	AWeapon* CurrentWeapon = GetWorld()->SpawnActor<AWeapon>(PlayerWeapon);
+	CurrentWeapon->AttachWeapon(this);
 
-	/*for (const TSubclassOf<AWeapon>& Weapon : Weapons)
-	{
-		if (!Weapon) continue;
-		FActorSpawnParameters Parameters;
-		Parameters.Owner = this;
-		AWeapon* SpawnedWeapon = GetWorld()->SpawnActor<AWeapon>(Weapon, Parameters);
-	}*/
+
 	
 }
 
@@ -125,3 +132,19 @@ void APlayerCharacter::StopSprint()
 	UE_LOG(LogTemp, Warning, TEXT("Sprint End"));
 }
 
+
+void APlayerCharacter::SetHasWeapon(bool bNewHasWeapon)
+{
+	HasWeapon = bNewHasWeapon;
+}
+
+bool APlayerCharacter::GetHasWeapon()
+{
+	return HasWeapon;
+}
+
+
+USkeletalMeshComponent* APlayerCharacter::GetFPSMesh() const
+{
+	return FPSMesh;
+}

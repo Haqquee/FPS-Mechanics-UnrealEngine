@@ -48,6 +48,20 @@ public:
 	// Weapons
 	// UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
 	// TArray<TSubclassOf<class AWeapon>> Weapons;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
+	TSubclassOf<class AWeapon> PlayerWeapon;
+
+	/** Bool for AnimBP to switch to another animation set */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon)
+	bool HasWeapon;
+
+	UFUNCTION(BlueprintCallable, Category = Weapon)
+	void SetHasWeapon(bool NewHasWeapon);
+
+	UFUNCTION(BlueprintCallable, Category = Weapon)
+	bool GetHasWeapon();
+
 	
 
 public:
@@ -75,5 +89,6 @@ public:
 
 	void StopSprint();
 
+	USkeletalMeshComponent* GetFPSMesh() const;
 
 };
