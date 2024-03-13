@@ -10,6 +10,8 @@
 #include "ShooterMechanics\Weapon.h"
 
 
+
+
 // Sets default values
 APlayerCharacter::APlayerCharacter()
 {
@@ -38,8 +40,7 @@ APlayerCharacter::APlayerCharacter()
 	GetCharacterMovement()->MaxWalkSpeed = DefaultSpeed;
 
 	// Weapon
-	HasWeapon = false;
-
+	bHasRifle = true;
 
 	const FTransform GripSocket = GetFPSMesh()->GetSocketTransform(FName(TEXT("GripPoint")), ERelativeTransformSpace::RTS_World);
 	//
@@ -62,8 +63,12 @@ void APlayerCharacter::BeginPlay()
 		}
 	}
 	
-	AWeapon* CurrentWeapon = GetWorld()->SpawnActor<AWeapon>(PlayerWeapon);
-	CurrentWeapon->AttachWeapon(this);
+
+	if ((PlayerWeapon != nullptr))
+	{
+		AWeapon* CurrentWeapon = GetWorld()->SpawnActor<AWeapon>(PlayerWeapon);
+		CurrentWeapon->AttachWeapon(this);
+	}
 
 
 	
@@ -133,14 +138,14 @@ void APlayerCharacter::StopSprint()
 }
 
 
-void APlayerCharacter::SetHasWeapon(bool bNewHasWeapon)
+void APlayerCharacter::SetHasRifle(bool bNewHasRifle)
 {
-	HasWeapon = bNewHasWeapon;
+	bHasRifle = bNewHasRifle;
 }
 
-bool APlayerCharacter::GetHasWeapon()
+bool APlayerCharacter::GetHasRifle()
 {
-	return HasWeapon;
+	return bHasRifle;
 }
 
 

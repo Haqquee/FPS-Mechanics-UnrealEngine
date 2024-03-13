@@ -46,22 +46,19 @@ public:
 	class UInputAction* FireAction;
 
 	// Weapons
-	// UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
-	// TArray<TSubclassOf<class AWeapon>> Weapons;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
 	TSubclassOf<class AWeapon> PlayerWeapon;
 
 	/** Bool for AnimBP to switch to another animation set */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon)
-	bool HasWeapon;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
+	bool bHasRifle;
 
 	UFUNCTION(BlueprintCallable, Category = Weapon)
-	void SetHasWeapon(bool NewHasWeapon);
+	void SetHasRifle(bool NewHasRifle);
 
 	UFUNCTION(BlueprintCallable, Category = Weapon)
-	bool GetHasWeapon();
-
+	bool GetHasRifle();
 	
 
 public:

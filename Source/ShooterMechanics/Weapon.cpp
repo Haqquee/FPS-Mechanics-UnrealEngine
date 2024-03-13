@@ -35,8 +35,16 @@ void AWeapon::Tick(float DeltaTime)
 void AWeapon::AttachWeapon(APlayerCharacter* TargetCharacter)
 {
 	Character = TargetCharacter;
+	// -10 0 0
+	// 0 20 345
+	// 1 1 1
+	FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, true);
 
-	FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, true);
+	//FTransform SocketTransform = Character->GetFPSMesh()->GetSocketTransform(FName(TEXT("GripPoint")));
+	//FVector TranslationOffset(-10.0f, 0.0f, 0.0f);
+	//FRotator RotationOffset(0.0f, 20.0f, 345.0f);
+	//SocketTransform.AddToTranslation(TranslationOffset);
+	//SocketTransform.ConcatenateRotation(RotationOffset.Quaternion());
 	AttachToComponent(Character->GetFPSMesh(), AttachmentRules, FName(TEXT("GripPoint")));
 
 }
