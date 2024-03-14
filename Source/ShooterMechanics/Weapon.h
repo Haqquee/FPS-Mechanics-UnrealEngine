@@ -52,6 +52,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	void AttachWeapon(APlayerCharacter* TargetCharacter);
 
+	void DestroyWeapon();
+
+	void DetachWeapon();
+
 	bool OnCharacter;
 
 

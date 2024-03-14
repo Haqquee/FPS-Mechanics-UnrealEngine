@@ -47,3 +47,14 @@ void AWeapon::AttachWeapon(APlayerCharacter* TargetCharacter)
 
 }
 
+void AWeapon::DestroyWeapon()
+{
+	this->Destroy();
+}
+
+void AWeapon::DetachWeapon()
+{ 
+	Mesh->SetSimulatePhysics(true);
+	Mesh->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+}
+

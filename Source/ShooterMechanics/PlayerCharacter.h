@@ -47,7 +47,21 @@ public:
 
 	// Weapons
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
-	TSubclassOf<class AWeapon> PlayerWeapon;
+	TSubclassOf<class AWeapon> Weapon1;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
+	TSubclassOf<class AWeapon> Weapon2;
+
+	AWeapon* CurrentWeapon;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
+	bool bHasWeapon;
+
+	UFUNCTION(BlueprintCallable, Category = Weapon)
+	void SetHasWeapon(bool NewHasWeapon);
+
+	UFUNCTION(BlueprintCallable, Category = Weapon)
+	bool GetHasWeapon();
 
 	/** Bool for AnimBP to switch to another animation set */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
@@ -86,5 +100,15 @@ public:
 	void StopSprint();
 
 	USkeletalMeshComponent* GetFPSMesh() const;
+
+	// Testing Weapon Functionalities
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* SpawnRifle;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* SpawnHandgun;
+
+	void SpawnEquipRifle();
+	void SpawnEquipHandgun();
 
 };

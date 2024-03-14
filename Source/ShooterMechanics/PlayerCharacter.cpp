@@ -40,7 +40,9 @@ APlayerCharacter::APlayerCharacter()
 	GetCharacterMovement()->MaxWalkSpeed = DefaultSpeed;
 
 	// Weapon
+	bHasWeapon = false;
 	bHasRifle = true;
+	CurrentWeapon = nullptr;
 
 	const FTransform GripSocket = GetFPSMesh()->GetSocketTransform(FName(TEXT("GripPoint")), ERelativeTransformSpace::RTS_World);
 	//
@@ -62,14 +64,6 @@ void APlayerCharacter::BeginPlay()
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
 	}
-	
-
-	if ((PlayerWeapon != nullptr))
-	{
-		AWeapon* CurrentWeapon = GetWorld()->SpawnActor<AWeapon>(PlayerWeapon);
-		CurrentWeapon->AttachWeapon(this);
-	}
-
 
 	
 }
@@ -94,6 +88,10 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInput->BindAction(FireAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Fire);
 	PlayerInput->BindAction(SprintAction, ETriggerEvent::Started, this, &APlayerCharacter::StartSprint);
 	PlayerInput->BindAction(SprintAction, ETriggerEvent::Completed, this, &APlayerCharacter::StopSprint);
+
+	//Testing Weapon Functionalities
+	PlayerInput->BindAction(SpawnRifle, ETriggerEvent::Triggered, this, &APlayerCharacter::SpawnEquipRifle);
+	PlayerInput->BindAction(SpawnHandgun, ETriggerEvent::Triggered, this, &APlayerCharacter::SpawnEquipHandgun);
 
 }
 
@@ -128,15 +126,23 @@ void APlayerCharacter::Fire()
 void APlayerCharacter::StartSprint()
 {
 	GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
-	UE_LOG(LogTemp, Warning, TEXT("Sprint Start"));
 }
 
 void APlayerCharacter::StopSprint()
 {
 	GetCharacterMovement()->MaxWalkSpeed = DefaultSpeed;
-	UE_LOG(LogTemp, Warning, TEXT("Sprint End"));
 }
 
+
+void APlayerCharacter::SetHasWeapon(bool NewHasWeapon)
+{
+	bHasWeapon = NewHasWeapon;
+}
+
+bool APlayerCharacter::GetHasWeapon()
+{
+	return bHasWeapon;
+}
 
 void APlayerCharacter::SetHasRifle(bool bNewHasRifle)
 {
@@ -152,4 +158,36 @@ bool APlayerCharacter::GetHasRifle()
 USkeletalMeshComponent* APlayerCharacter::GetFPSMesh() const
 {
 	return FPSMesh;
+}
+
+void APlayerCharacter::SpawnEquipRifle()
+{
+	if (CurrentWeapon != nullptr)
+	{
+		CurrentWeapon->Destroy();
+	}
+
+	if ((Weapon1 != nullptr))
+	{
+		AWeapon* NewRifle = GetWorld()->SpawnActor<AWeapon>(Weapon1);
+		NewRifle->AttachWeapon(this);
+		this->SetHasWeapon(true);
+		CurrentWeapon = NewRifle;
+	}
+}
+
+void APlayerCharacter::SpawnEquipHandgun()
+{
+	if (CurrentWeapon != nullptr)
+	{
+		CurrentWeapon->Destroy();
+	}
+
+	if ((Weapon2 != nullptr))
+	{
+		AWeapon* NewHandgun = GetWorld()->SpawnActor<AWeapon>(Weapon2);
+		NewHandgun->AttachWeapon(this);
+		this->SetHasWeapon(true);
+		CurrentWeapon = NewHandgun;
+	}
 }
