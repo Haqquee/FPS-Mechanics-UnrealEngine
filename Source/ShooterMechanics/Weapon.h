@@ -6,18 +6,6 @@
 #include "GameFramework/Actor.h"
 #include "Weapon.generated.h"
 
-USTRUCT(BlueprintType)
-struct FInverseKinematicsProperties {
-	GENERATED_BODY()
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	class UAnimSequence* AnimPose;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float AimOffset = 15.f;
-
-};
-
 UCLASS()
 class SHOOTERMECHANICS_API AWeapon : public AActor
 {
@@ -41,9 +29,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
 	class USkeletalMeshComponent* Mesh;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Configurations")
-	FInverseKinematicsProperties InverseKinematics;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
 	FTransform PlacementTransform;
 
@@ -66,5 +51,8 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	void AttachWeapon(APlayerCharacter* TargetCharacter);
+
+	bool OnCharacter;
+
 
 };

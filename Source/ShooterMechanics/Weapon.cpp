@@ -14,14 +14,17 @@ AWeapon::AWeapon()
 
 	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
 	Mesh->SetupAttachment(Root);
+
 }
 
 // Called when the game starts or when spawned
 void AWeapon::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	//Mesh->SetVisibility(false);
+
+	//Enable Physics
+	Mesh->SetSimulatePhysics(true);
+	Mesh->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
 	
 }
 
@@ -35,17 +38,12 @@ void AWeapon::Tick(float DeltaTime)
 void AWeapon::AttachWeapon(APlayerCharacter* TargetCharacter)
 {
 	Character = TargetCharacter;
-	// -10 0 0
-	// 0 20 345
-	// 1 1 1
 	FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, true);
-
-	//FTransform SocketTransform = Character->GetFPSMesh()->GetSocketTransform(FName(TEXT("GripPoint")));
-	//FVector TranslationOffset(-10.0f, 0.0f, 0.0f);
-	//FRotator RotationOffset(0.0f, 20.0f, 345.0f);
-	//SocketTransform.AddToTranslation(TranslationOffset);
-	//SocketTransform.ConcatenateRotation(RotationOffset.Quaternion());
 	AttachToComponent(Character->GetFPSMesh(), AttachmentRules, FName(TEXT("GripPoint")));
+
+	//Disable Physics if Weapon is Attached to Character
+	Mesh->SetSimulatePhysics(false);
+	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 }
 

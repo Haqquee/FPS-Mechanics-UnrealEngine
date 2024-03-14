@@ -46,7 +46,6 @@ public:
 	class UInputAction* FireAction;
 
 	// Weapons
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
 	TSubclassOf<class AWeapon> PlayerWeapon;
 
