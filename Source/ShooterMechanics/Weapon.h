@@ -56,6 +56,9 @@ public:
 
 	void DetachWeapon();
 
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	void Fire(APlayerCharacter* TargetCharacter);
+
 	bool OnCharacter;
 
 

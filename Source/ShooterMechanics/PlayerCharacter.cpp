@@ -85,13 +85,14 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInput->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 	PlayerInput->BindAction(LookAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Look);
 	PlayerInput->BindAction(MoveAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Move);
-	PlayerInput->BindAction(FireAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Fire);
 	PlayerInput->BindAction(SprintAction, ETriggerEvent::Started, this, &APlayerCharacter::StartSprint);
 	PlayerInput->BindAction(SprintAction, ETriggerEvent::Completed, this, &APlayerCharacter::StopSprint);
 
-	//Testing Weapon Functionalities
+	//Weapon Functionalities
 	PlayerInput->BindAction(SpawnRifle, ETriggerEvent::Triggered, this, &APlayerCharacter::SpawnEquipRifle);
 	PlayerInput->BindAction(SpawnHandgun, ETriggerEvent::Triggered, this, &APlayerCharacter::SpawnEquipHandgun);
+	PlayerInput->BindAction(DropWeapon, ETriggerEvent::Triggered, this, &APlayerCharacter::DropCurrentWeapon);
+	PlayerInput->BindAction(FireAction, ETriggerEvent::Triggered, this, &APlayerCharacter::OnFire);
 
 }
 
@@ -118,9 +119,12 @@ void APlayerCharacter::Look(const struct FInputActionValue& Value)
 	}
 }
 
-void APlayerCharacter::Fire()
+void APlayerCharacter::OnFire()
 {
-
+	if (CurrentWeapon != nullptr)
+	{
+		CurrentWeapon->Fire(this);
+	}
 }
 
 void APlayerCharacter::StartSprint()
@@ -160,6 +164,16 @@ USkeletalMeshComponent* APlayerCharacter::GetFPSMesh() const
 	return FPSMesh;
 }
 
+void APlayerCharacter::DropCurrentWeapon()
+{
+	if (CurrentWeapon != nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Dropping"));
+		CurrentWeapon->DetachWeapon();
+		CurrentWeapon = nullptr;
+	}
+}
+
 void APlayerCharacter::SpawnEquipRifle()
 {
 	if (CurrentWeapon != nullptr)
@@ -191,3 +205,4 @@ void APlayerCharacter::SpawnEquipHandgun()
 		CurrentWeapon = NewHandgun;
 	}
 }
+

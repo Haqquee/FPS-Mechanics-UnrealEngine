@@ -58,3 +58,16 @@ void AWeapon::DetachWeapon()
 	Mesh->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
 }
 
+void AWeapon::Fire(APlayerCharacter* TargetCharacter)
+{
+	if (TargetCharacter != nullptr) 
+	{
+		Character = TargetCharacter;
+		UAnimInstance* AnimInstance = Character->GetFPSMesh()->GetAnimInstance();
+		if (AnimInstance != nullptr)
+		{
+			AnimInstance->Montage_Play(FireAnimation, 1.f);
+		}
+	}
+}
+

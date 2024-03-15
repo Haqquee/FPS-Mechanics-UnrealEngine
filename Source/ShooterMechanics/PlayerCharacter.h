@@ -93,7 +93,7 @@ public:
 	void Move(const struct FInputActionValue& Value);
 
 	UFUNCTION()
-	void Fire();
+	void OnFire();
 
 	void StartSprint();
 
@@ -108,7 +108,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* SpawnHandgun;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* DropWeapon;
+
 	void SpawnEquipRifle();
 	void SpawnEquipHandgun();
+	void DropCurrentWeapon();
 
 };
