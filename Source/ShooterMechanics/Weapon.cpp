@@ -2,6 +2,7 @@
 
 #include "Weapon.h"
 #include "ShooterMechanics\PlayerCharacter.h"
+#include "Camera/CameraComponent.h"
 
 // Sets default values
 AWeapon::AWeapon()
@@ -15,6 +16,8 @@ AWeapon::AWeapon()
 	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
 	Mesh->SetupAttachment(Root);
 
+	Muzzle = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MuzzleMesh"));
+	Muzzle->SetupAttachment(Mesh);
 }
 
 // Called when the game starts or when spawned
@@ -60,14 +63,42 @@ void AWeapon::DetachWeapon()
 
 void AWeapon::Fire(APlayerCharacter* TargetCharacter)
 {
+	UE_LOG(LogTemp, Warning, TEXT("Firing"));
 	if (TargetCharacter != nullptr) 
 	{
 		Character = TargetCharacter;
+
+		// Firing Animation
 		UAnimInstance* AnimInstance = Character->GetFPSMesh()->GetAnimInstance();
 		if (AnimInstance != nullptr)
 		{
 			AnimInstance->Montage_Play(FireAnimation, 1.f);
 		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Cannot get Weapon Fire Animation Instance."));
+		}
+
+		// Hitscan
+		APlayerController* CharacterController = Cast<APlayerController>(Character->GetController());
+		if ((CharacterController != nullptr) && (Muzzle != nullptr))
+		{
+			FHitResult OutHit;
+			FVector Start = Muzzle->GetComponentLocation();
+			FRotator Rotation = CharacterController->PlayerCameraManager->GetCameraRotation();
+			FVector Direction = Rotation.Vector();
+			FVector End = Start + (Direction * 1000.f);
+
+			DrawDebugLine(GetWorld(), Start, End, FColor::Green, true);
+		} 
+		else
+		{ 
+			UE_LOG(LogTemp, Warning, TEXT("Cant get camera component"));
+		}
+
+
 	}
+
+	UE_LOG(LogTemp, Warning, TEXT("Cannot get Target Character."));
 }
 

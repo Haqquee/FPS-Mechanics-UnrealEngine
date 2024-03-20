@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "PlayerCharacter.h"
 #include "Camera/CameraComponent.h"
 #include "EnhancedInputComponent.h"
@@ -8,9 +7,6 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "ShooterMechanics\Weapon.h"
-
-
-
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -47,7 +43,6 @@ APlayerCharacter::APlayerCharacter()
 	const FTransform GripSocket = GetFPSMesh()->GetSocketTransform(FName(TEXT("GripPoint")), ERelativeTransformSpace::RTS_World);
 	//
 	
-	
 }
 
 // Called when the game starts or when spawned
@@ -64,15 +59,12 @@ void APlayerCharacter::BeginPlay()
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
 	}
-
-	
 }
 
 // Called every frame
 void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 // Called to bind functionality to input
@@ -107,7 +99,6 @@ void APlayerCharacter::Move(const struct FInputActionValue& Value)
 	}
 }
 
-
 void APlayerCharacter::Look(const struct FInputActionValue& Value)
 {
 	FVector2D LookVector = Value.Get<FVector2D>();
@@ -138,37 +129,10 @@ void APlayerCharacter::StopSprint()
 }
 
 
-void APlayerCharacter::SetHasWeapon(bool NewHasWeapon)
-{
-	bHasWeapon = NewHasWeapon;
-}
-
-bool APlayerCharacter::GetHasWeapon()
-{
-	return bHasWeapon;
-}
-
-void APlayerCharacter::SetHasRifle(bool bNewHasRifle)
-{
-	bHasRifle = bNewHasRifle;
-}
-
-bool APlayerCharacter::GetHasRifle()
-{
-	return bHasRifle;
-}
-
-
-USkeletalMeshComponent* APlayerCharacter::GetFPSMesh() const
-{
-	return FPSMesh;
-}
-
 void APlayerCharacter::DropCurrentWeapon()
 {
 	if (CurrentWeapon != nullptr)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Dropping"));
 		CurrentWeapon->DetachWeapon();
 		CurrentWeapon = nullptr;
 	}
@@ -204,5 +168,38 @@ void APlayerCharacter::SpawnEquipHandgun()
 		this->SetHasWeapon(true);
 		CurrentWeapon = NewHandgun;
 	}
+}
+
+// Getter/Setter functions
+
+void APlayerCharacter::SetHasWeapon(bool NewHasWeapon)
+{
+	bHasWeapon = NewHasWeapon;
+}
+
+bool APlayerCharacter::GetHasWeapon()
+{
+	return bHasWeapon;
+}
+
+void APlayerCharacter::SetHasRifle(bool bNewHasRifle)
+{
+	bHasRifle = bNewHasRifle;
+}
+
+bool APlayerCharacter::GetHasRifle()
+{
+	return bHasRifle;
+}
+
+
+USkeletalMeshComponent* APlayerCharacter::GetFPSMesh() const
+{
+	return FPSMesh;
+}
+
+UCameraComponent* APlayerCharacter::GetFPSCameraComponent() const
+{
+	return PlayerCamera;
 }
 

@@ -30,6 +30,9 @@ public:
 	class USkeletalMeshComponent* Mesh;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+	class UStaticMeshComponent* Muzzle;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
 	FTransform PlacementTransform;
 
 	// Sound
@@ -60,6 +63,13 @@ public:
 	void Fire(APlayerCharacter* TargetCharacter);
 
 	bool OnCharacter;
+
+	// Weapon Specific
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ammo")
+	int ClipSize;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ammo")
+	int MaxAmmo;
 
 
 };

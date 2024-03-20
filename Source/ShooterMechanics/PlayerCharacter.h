@@ -12,10 +12,10 @@ class SHOOTERMECHANICS_API APlayerCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* PlayerCamera;
 
-	UPROPERTY(VisibleDefaultsOnly, BluePrintReadOnly, Category = Mesh, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Mesh, meta = (AllowPrivateAccess = "true"))
 	class USkeletalMeshComponent* FPSMesh;
 
 public:
@@ -99,7 +99,6 @@ public:
 
 	void StopSprint();
 
-	USkeletalMeshComponent* GetFPSMesh() const;
 
 	// Testing Weapon Functionalities
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
@@ -115,4 +114,7 @@ public:
 	void SpawnEquipHandgun();
 	void DropCurrentWeapon();
 
+	// Getter/setter functions
+	USkeletalMeshComponent* GetFPSMesh() const;
+	UCameraComponent* GetFPSCameraComponent() const;
 };
