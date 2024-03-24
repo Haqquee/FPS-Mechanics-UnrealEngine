@@ -22,7 +22,8 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	
+
+	// Components
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
 	class USceneComponent* Root;
 
@@ -51,7 +52,8 @@ public:
 	class UInputAction* FireAction;
 
 	APlayerCharacter* Character;
-
+	
+	// Actions
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	void AttachWeapon(APlayerCharacter* TargetCharacter);
 
@@ -64,12 +66,15 @@ public:
 
 	bool OnCharacter;
 
-	// Weapon Specific
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ammo")
+	// Weapon Specific Properties
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Poperties")
 	int ClipSize;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ammo")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Poperties")
 	int MaxAmmo;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Poperties")
+	float FireRate;
 
 
 };

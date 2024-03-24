@@ -1,0 +1,2 @@
+#include "Rifle.h"
+

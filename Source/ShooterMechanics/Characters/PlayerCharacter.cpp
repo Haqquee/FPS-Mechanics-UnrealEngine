@@ -1,17 +1,15 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #include "PlayerCharacter.h"
 #include "Camera/CameraComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "ShooterMechanics\Weapon.h"
+#include "ShooterMechanics\Weapons/Weapon.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+ 	// Set this character to call Tick() every frame. 
 	PrimaryActorTick.bCanEverTick = true;
 
 	// Capsule
@@ -40,8 +38,9 @@ APlayerCharacter::APlayerCharacter()
 	bHasRifle = true;
 	CurrentWeapon = nullptr;
 
+	// Get the transformation vector of the player's grip point (to attach a weapon to)
 	const FTransform GripSocket = GetFPSMesh()->GetSocketTransform(FName(TEXT("GripPoint")), ERelativeTransformSpace::RTS_World);
-	//
+	
 	
 }
 
@@ -52,6 +51,7 @@ void APlayerCharacter::BeginPlay()
 
 	UE_LOG(LogTemp, Warning, TEXT("Start"));
 
+	// Set the input mapping context to the defualt context when the game starts
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
@@ -73,6 +73,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	//Super::SetupPlayerInputComponent(PlayerInputComponent);
 	UEnhancedInputComponent* PlayerInput = Cast<UEnhancedInputComponent>(PlayerInputComponent);
 
+	// Movement Controls
 	PlayerInput->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
 	PlayerInput->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 	PlayerInput->BindAction(LookAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Look);
@@ -80,7 +81,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInput->BindAction(SprintAction, ETriggerEvent::Started, this, &APlayerCharacter::StartSprint);
 	PlayerInput->BindAction(SprintAction, ETriggerEvent::Completed, this, &APlayerCharacter::StopSprint);
 
-	//Weapon Functionalities
+	// Weapon Controls
 	PlayerInput->BindAction(SpawnRifle, ETriggerEvent::Triggered, this, &APlayerCharacter::SpawnEquipRifle);
 	PlayerInput->BindAction(SpawnHandgun, ETriggerEvent::Triggered, this, &APlayerCharacter::SpawnEquipHandgun);
 	PlayerInput->BindAction(DropWeapon, ETriggerEvent::Triggered, this, &APlayerCharacter::DropCurrentWeapon);

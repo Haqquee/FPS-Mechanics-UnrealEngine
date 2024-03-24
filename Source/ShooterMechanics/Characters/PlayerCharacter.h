@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -12,6 +10,7 @@ class SHOOTERMECHANICS_API APlayerCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
+	// Components
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* PlayerCamera;
 
@@ -19,6 +18,7 @@ class SHOOTERMECHANICS_API APlayerCharacter : public ACharacter
 	class USkeletalMeshComponent* FPSMesh;
 
 public:
+
 	// Input
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputMappingContext* DefaultMappingContext;
@@ -63,7 +63,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = Weapon)
 	bool GetHasWeapon();
 
-	/** Bool for AnimBP to switch to another animation set */
+	/** Boolean for Animation Blueprint to switch to another animation set */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 	bool bHasRifle;
 
@@ -89,7 +89,9 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	// Functions for player actions
 	void Look(const struct FInputActionValue& Value);
+
 	void Move(const struct FInputActionValue& Value);
 
 	UFUNCTION()
@@ -99,8 +101,8 @@ public:
 
 	void StopSprint();
 
+	// Weapon Spawning (currently only for debugging purposes)
 
-	// Testing Weapon Functionalities
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* SpawnRifle;
 
@@ -111,10 +113,13 @@ public:
 	class UInputAction* DropWeapon;
 
 	void SpawnEquipRifle();
+
 	void SpawnEquipHandgun();
+
 	void DropCurrentWeapon();
 
 	// Getter/setter functions
 	USkeletalMeshComponent* GetFPSMesh() const;
+
 	UCameraComponent* GetFPSCameraComponent() const;
 };

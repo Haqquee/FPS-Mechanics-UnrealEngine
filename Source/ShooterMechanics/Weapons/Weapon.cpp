@@ -1,13 +1,11 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #include "Weapon.h"
-#include "ShooterMechanics\PlayerCharacter.h"
+#include "ShooterMechanics\Characters/PlayerCharacter.h"
 #include "Camera/CameraComponent.h"
 
 // Sets default values
 AWeapon::AWeapon()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+ 	// Set this actor to call Tick() every frame. 
 	PrimaryActorTick.bCanEverTick = true;
 
 	Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
@@ -18,6 +16,8 @@ AWeapon::AWeapon()
 
 	Muzzle = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MuzzleMesh"));
 	Muzzle->SetupAttachment(Mesh);
+
+	FireRate = 600; // Default fire rate of the weapon class (individual weapons will have a seperate rates)
 }
 
 // Called when the game starts or when spawned
@@ -25,9 +25,11 @@ void AWeapon::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//Enable Physics
+	// Enable Physics when game is started
 	Mesh->SetSimulatePhysics(true);
 	Mesh->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+
+	FireRate = 60 / FireRate;
 	
 }
 
@@ -35,16 +37,16 @@ void AWeapon::BeginPlay()
 void AWeapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
+// Attach weapon to the player's hand (equip weapon)
 void AWeapon::AttachWeapon(APlayerCharacter* TargetCharacter)
 {
 	Character = TargetCharacter;
 	FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, true);
 	AttachToComponent(Character->GetFPSMesh(), AttachmentRules, FName(TEXT("GripPoint")));
 
-	//Disable Physics if Weapon is Attached to Character
+	//Disable Physics if weapon is attached to character
 	Mesh->SetSimulatePhysics(false);
 	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
@@ -57,13 +59,13 @@ void AWeapon::DestroyWeapon()
 
 void AWeapon::DetachWeapon()
 { 
+	// Enable weapon physics when weapon is not equipped
 	Mesh->SetSimulatePhysics(true);
 	Mesh->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
 }
 
 void AWeapon::Fire(APlayerCharacter* TargetCharacter)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Firing"));
 	if (TargetCharacter != nullptr) 
 	{
 		Character = TargetCharacter;
@@ -74,12 +76,8 @@ void AWeapon::Fire(APlayerCharacter* TargetCharacter)
 		{
 			AnimInstance->Montage_Play(FireAnimation, 1.f);
 		}
-		else
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Cannot get Weapon Fire Animation Instance."));
-		}
 
-		// Hitscan
+		// Raycast (traces a line from the weapon's muzzle to the point at which the player is aiming)
 		APlayerController* CharacterController = Cast<APlayerController>(Character->GetController());
 		if ((CharacterController != nullptr) && (Muzzle != nullptr))
 		{
@@ -88,17 +86,8 @@ void AWeapon::Fire(APlayerCharacter* TargetCharacter)
 			FRotator Rotation = CharacterController->PlayerCameraManager->GetCameraRotation();
 			FVector Direction = Rotation.Vector();
 			FVector End = Start + (Direction * 1000.f);
-
-			DrawDebugLine(GetWorld(), Start, End, FColor::Green, true);
+			DrawDebugLine(GetWorld(), Start, End, FColor::Green, true); //Debug Line
 		} 
-		else
-		{ 
-			UE_LOG(LogTemp, Warning, TEXT("Cant get camera component"));
-		}
-
-
 	}
-
-	UE_LOG(LogTemp, Warning, TEXT("Cannot get Target Character."));
 }
 
