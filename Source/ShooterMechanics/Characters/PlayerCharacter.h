@@ -143,7 +143,10 @@ public:
 
 	void Pickup();
 
+	FHitResult PerformLineTrace(float Distance);
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool isLookingAtItem;
 
 
 	// Getter/setter functions

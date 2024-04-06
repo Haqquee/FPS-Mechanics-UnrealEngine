@@ -42,6 +42,9 @@ APlayerCharacter::APlayerCharacter()
 	bHasRifle = true;
 	CurrentWeapon = nullptr;
 
+	// Other Variables
+	
+
 	// Get the transformation vector of the player's grip point (to attach a weapon to)
 	const FTransform GripSocket = GetFPSMesh()->GetSocketTransform(FName(TEXT("GripPoint")), ERelativeTransformSpace::RTS_World);
 	
@@ -69,6 +72,18 @@ void APlayerCharacter::BeginPlay()
 void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	FHitResult HitResult = PerformLineTrace(InteractionLength);
+
+	AWeapon* Weapon = Cast<AWeapon>(HitResult.GetActor());
+	if (Weapon)
+	{
+		isLookingAtItem = true;
+	}
+	else
+	{
+		isLookingAtItem = false;
+	}
 }
 
 // Called to bind functionality to input
@@ -77,7 +92,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	//Super::SetupPlayerInputComponent(PlayerInputComponent);
 	UEnhancedInputComponent* PlayerInput = Cast<UEnhancedInputComponent>(PlayerInputComponent);
 
-	// Movement Controls
+	// Movement controls
 	PlayerInput->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
 	PlayerInput->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 	PlayerInput->BindAction(LookAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Look);
@@ -85,13 +100,15 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInput->BindAction(SprintAction, ETriggerEvent::Started, this, &APlayerCharacter::StartSprint);
 	PlayerInput->BindAction(SprintAction, ETriggerEvent::Completed, this, &APlayerCharacter::StopSprint);
 
-	// Weapon Controls
+	// Weapon controls
 	PlayerInput->BindAction(SpawnRifle, ETriggerEvent::Triggered, this, &APlayerCharacter::SpawnEquipRifle);
 	PlayerInput->BindAction(SpawnHandgun, ETriggerEvent::Triggered, this, &APlayerCharacter::SpawnEquipHandgun);
 	PlayerInput->BindAction(DropWeapon, ETriggerEvent::Triggered, this, &APlayerCharacter::DropCurrentWeapon);
 	PlayerInput->BindAction(FireAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Fire);
 	PlayerInput->BindAction(ADSAction, ETriggerEvent::Started, this, &APlayerCharacter::StartADS);
 	PlayerInput->BindAction(ADSAction, ETriggerEvent::Completed, this, &APlayerCharacter::StopADS);
+
+	// Interaction controls
 	PlayerInput->BindAction(InteractAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Pickup);
 
 }
@@ -160,19 +177,12 @@ void APlayerCharacter::Pickup()
 {
 	if (PlayerCamera != nullptr)
 	{
-		FHitResult HitResult;
-		FVector Start = PlayerCamera->GetComponentLocation(); //For debugging purposes (displays the projectiles coming out of the weapon's muzzle)
-		FVector Direction = PlayerCamera->GetForwardVector();
-		FVector End = Start + (Direction * InteractionLength);
-		DrawDebugLine(GetWorld(), Start, End, FColor::Red, true); //Debug Line
-		GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility);
-
 		// Weapon pickup
-		UE_LOG(LogTemp, Warning, TEXT("Hit actor class: %s"), *HitResult.GetActor()->GetClass()->GetName());
-		AWeapon* Weapon = Cast<AWeapon>(HitResult.GetActor());
+		FHitResult ItemHitResult = PerformLineTrace(InteractionLength);
+		//UE_LOG(LogTemp, Warning, TEXT("Hit actor class: %s"), *ItemHitResult.GetActor()->GetClass()->GetName()); // Debug line
+		AWeapon* Weapon = Cast<AWeapon>(ItemHitResult.GetActor());
 		if (Weapon != nullptr)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Weapon"));
 			Weapon->OnPickup();
 			if (CurrentWeapon == nullptr)
 			{
@@ -184,12 +194,21 @@ void APlayerCharacter::Pickup()
 				Weapon->AttachWeapon(this);
 			}
 		}
-		else 
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Not Weapon"));
-		}
 
 	}
+}
+
+FHitResult APlayerCharacter::PerformLineTrace(float Distance)
+{
+	FHitResult HitResult;
+	FVector Start = PlayerCamera->GetComponentLocation();
+	FVector Direction = PlayerCamera->GetForwardVector();
+	FVector End = Start + (Direction * Distance);
+	if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility))
+	{
+		return HitResult;
+	}
+	return FHitResult();
 }
 
 void APlayerCharacter::SpawnEquipRifle()

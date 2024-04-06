@@ -38,9 +38,11 @@ void AWeapon::BeginPlay()
 	{
 		Mesh->SetSimulatePhysics(true);
 		Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-		Mesh->SetCollisionProfileName(TEXT("BlockAllDynamic"));
+		Mesh->SetCollisionProfileName(TEXT("Weapon"));
+		
+		
 		Mesh->PhysicsTransformUpdateMode = EPhysicsTransformUpdateMode::ComponentTransformIsKinematic;
-		//Mesh->SetCollisionObjectType(ECollisionChannel::)
+		
 	}
 	
 
@@ -86,7 +88,7 @@ void AWeapon::DetachWeapon()
 	// Enable weapon physics when weapon is not equipped
 	Mesh->SetSimulatePhysics(true);
 	Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	Mesh->SetCollisionProfileName(TEXT("BlockAllDynamic"));
+	Mesh->SetCollisionProfileName(TEXT("Weapon"));
 }
 
 void AWeapon::OnFire(APlayerCharacter* TargetCharacter)
