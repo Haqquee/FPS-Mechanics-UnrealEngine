@@ -19,7 +19,7 @@ class SHOOTERMECHANICS_API APlayerCharacter : public ACharacter
 
 public:
 
-	// Input
+	// Movement inputs
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputMappingContext* DefaultMappingContext;
 
@@ -35,15 +35,34 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* SprintAction;
 
+	// Weapon inputs
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* FireAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* ADSAction;
+
+	// Utility inputs
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* InteractAction;
+
+	// Movement Variables
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float DefaultSpeed;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float SprintSpeed;
 
-	// Testing Projectile Fire Functionality (To be implemented in a seperate 'Weapon' class later)
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	class UInputAction* FireAction;
+	// Camera Variables
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float DefaultFOV;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float AimFOV;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float InteractionLength;
+
 
 	// Weapons
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
@@ -95,11 +114,15 @@ public:
 	void Move(const struct FInputActionValue& Value);
 
 	UFUNCTION()
-	void OnFire();
+	void Fire();
 
 	void StartSprint();
 
 	void StopSprint();
+
+	void StartADS();
+
+	void StopADS();
 
 	// Weapon Spawning (currently only for debugging purposes)
 
@@ -117,6 +140,11 @@ public:
 	void SpawnEquipHandgun();
 
 	void DropCurrentWeapon();
+
+	void Pickup();
+
+
+
 
 	// Getter/setter functions
 	USkeletalMeshComponent* GetFPSMesh() const;

@@ -20,6 +20,10 @@ APlayerCharacter::APlayerCharacter()
 	PlayerCamera->SetupAttachment(GetCapsuleComponent());
 	PlayerCamera->bUsePawnControlRotation = true;
 	PlayerCamera->SetRelativeLocation(FVector(10.0f, 0.0f, 85.0f));
+	DefaultFOV = 120.f;
+	AimFOV = 90.f;
+	InteractionLength = 300.f;
+	PlayerCamera->SetFieldOfView(DefaultFOV);
 
 	// First Person Mesh
 	FPSMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("FirstPersonMesh"));
@@ -85,7 +89,10 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInput->BindAction(SpawnRifle, ETriggerEvent::Triggered, this, &APlayerCharacter::SpawnEquipRifle);
 	PlayerInput->BindAction(SpawnHandgun, ETriggerEvent::Triggered, this, &APlayerCharacter::SpawnEquipHandgun);
 	PlayerInput->BindAction(DropWeapon, ETriggerEvent::Triggered, this, &APlayerCharacter::DropCurrentWeapon);
-	PlayerInput->BindAction(FireAction, ETriggerEvent::Triggered, this, &APlayerCharacter::OnFire);
+	PlayerInput->BindAction(FireAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Fire);
+	PlayerInput->BindAction(ADSAction, ETriggerEvent::Started, this, &APlayerCharacter::StartADS);
+	PlayerInput->BindAction(ADSAction, ETriggerEvent::Completed, this, &APlayerCharacter::StopADS);
+	PlayerInput->BindAction(InteractAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Pickup);
 
 }
 
@@ -111,11 +118,11 @@ void APlayerCharacter::Look(const struct FInputActionValue& Value)
 	}
 }
 
-void APlayerCharacter::OnFire()
+void APlayerCharacter::Fire()
 {
 	if (CurrentWeapon != nullptr)
 	{
-		CurrentWeapon->Fire(this);
+		CurrentWeapon->OnFire(this);
 	}
 }
 
@@ -129,6 +136,16 @@ void APlayerCharacter::StopSprint()
 	GetCharacterMovement()->MaxWalkSpeed = DefaultSpeed;
 }
 
+void APlayerCharacter::StartADS()
+{
+	PlayerCamera->SetFieldOfView(AimFOV);
+}
+
+void APlayerCharacter::StopADS()
+{
+	PlayerCamera->SetFieldOfView(DefaultFOV);
+}
+
 
 void APlayerCharacter::DropCurrentWeapon()
 {
@@ -136,6 +153,42 @@ void APlayerCharacter::DropCurrentWeapon()
 	{
 		CurrentWeapon->DetachWeapon();
 		CurrentWeapon = nullptr;
+	}
+}
+
+void APlayerCharacter::Pickup()
+{
+	if (PlayerCamera != nullptr)
+	{
+		FHitResult HitResult;
+		FVector Start = PlayerCamera->GetComponentLocation(); //For debugging purposes (displays the projectiles coming out of the weapon's muzzle)
+		FVector Direction = PlayerCamera->GetForwardVector();
+		FVector End = Start + (Direction * InteractionLength);
+		DrawDebugLine(GetWorld(), Start, End, FColor::Red, true); //Debug Line
+		GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility);
+
+		// Weapon pickup
+		UE_LOG(LogTemp, Warning, TEXT("Hit actor class: %s"), *HitResult.GetActor()->GetClass()->GetName());
+		AWeapon* Weapon = Cast<AWeapon>(HitResult.GetActor());
+		if (Weapon != nullptr)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Weapon"));
+			Weapon->OnPickup();
+			if (CurrentWeapon == nullptr)
+			{
+				Weapon->AttachWeapon(this);
+			}
+			else
+			{
+				this->DropCurrentWeapon();
+				Weapon->AttachWeapon(this);
+			}
+		}
+		else 
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Not Weapon"));
+		}
+
 	}
 }
 

@@ -17,6 +17,8 @@ AWeapon::AWeapon()
 	Muzzle = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MuzzleMesh"));
 	Muzzle->SetupAttachment(Mesh);
 
+	OnCharacter = false;
+
 	FireRate = 600; // Default fire rate of the weapon class (individual weapons will have a seperate rates)
 }
 
@@ -26,8 +28,22 @@ void AWeapon::BeginPlay()
 	Super::BeginPlay();
 
 	// Enable Physics when game is started
-	Mesh->SetSimulatePhysics(true);
-	Mesh->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+	//Mesh->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
+	if (OnCharacter)
+	{
+		Mesh->SetSimulatePhysics(false);
+		Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
+	else
+	{
+		Mesh->SetSimulatePhysics(true);
+		Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		Mesh->SetCollisionProfileName(TEXT("BlockAllDynamic"));
+		Mesh->PhysicsTransformUpdateMode = EPhysicsTransformUpdateMode::ComponentTransformIsKinematic;
+		//Mesh->SetCollisionObjectType(ECollisionChannel::)
+	}
+	
+
 
 	FireRate = 60 / FireRate;
 	
@@ -45,11 +61,19 @@ void AWeapon::AttachWeapon(APlayerCharacter* TargetCharacter)
 	Character = TargetCharacter;
 	FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, true);
 	AttachToComponent(Character->GetFPSMesh(), AttachmentRules, FName(TEXT("GripPoint")));
+	Character->CurrentWeapon = this;
 
 	//Disable Physics if weapon is attached to character
 	Mesh->SetSimulatePhysics(false);
-	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	//Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	Mesh->SetCollisionProfileName(TEXT("NoCollision"));
+	
+	OnCharacter = true;
+}
 
+void AWeapon::OnPickup()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Picked up weapon."));
 }
 
 void AWeapon::DestroyWeapon()
@@ -61,12 +85,13 @@ void AWeapon::DetachWeapon()
 { 
 	// Enable weapon physics when weapon is not equipped
 	Mesh->SetSimulatePhysics(true);
-	Mesh->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+	Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	Mesh->SetCollisionProfileName(TEXT("BlockAllDynamic"));
 }
 
-void AWeapon::Fire(APlayerCharacter* TargetCharacter)
+void AWeapon::OnFire(APlayerCharacter* TargetCharacter)
 {
-	if (TargetCharacter != nullptr) 
+	if (TargetCharacter != nullptr)
 	{
 		Character = TargetCharacter;
 
@@ -81,11 +106,12 @@ void AWeapon::Fire(APlayerCharacter* TargetCharacter)
 		APlayerController* CharacterController = Cast<APlayerController>(Character->GetController());
 		if ((CharacterController != nullptr) && (Muzzle != nullptr))
 		{
-			FHitResult OutHit;
-			FVector Start = Muzzle->GetComponentLocation();
+			FHitResult HitResult;
+			FVector Start = Muzzle->GetComponentLocation(); //For debugging purposes (displays the projectiles coming out of the weapon's muzzle)
+			//FVector Start = CharacterController->PlayerCameraManager->GetCameraLocation();
 			FRotator Rotation = CharacterController->PlayerCameraManager->GetCameraRotation();
 			FVector Direction = Rotation.Vector();
-			FVector End = Start + (Direction * 1000.f);
+			FVector End = Start + (Direction * 50000.f);
 			DrawDebugLine(GetWorld(), Start, End, FColor::Green, true); //Debug Line
 		} 
 	}
