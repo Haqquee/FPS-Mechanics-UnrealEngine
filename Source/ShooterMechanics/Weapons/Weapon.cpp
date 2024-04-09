@@ -20,6 +20,8 @@ AWeapon::AWeapon()
 	OnCharacter = false;
 
 	FireRate = 600; // Default fire rate of the weapon class (individual weapons will have a seperate rates)
+
+	AimSocket = Mesh->GetSocketTransform(FName(TEXT("AimSocket")), ERelativeTransformSpace::RTS_World);
 }
 
 // Called when the game starts or when spawned
@@ -45,8 +47,6 @@ void AWeapon::BeginPlay()
 		
 	}
 	
-
-
 	FireRate = 60 / FireRate;
 	
 }
@@ -70,7 +70,19 @@ void AWeapon::AttachWeapon(APlayerCharacter* TargetCharacter)
 	//Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	Mesh->SetCollisionProfileName(TEXT("NoCollision"));
 	
+	SetAttachmentTransform();
 	OnCharacter = true;
+}
+
+void AWeapon::SetAttachmentTransform()
+{
+	// Base implementation, no default behaviour
+	// For testing purposes, using the values for Rifle
+	FVector AttachmentLocation = FVector(0.f, 7.5f, 2.5f);
+	FRotator AttachmentRotation = FRotator(15.f, -5.f, 0.f);
+
+	Mesh->SetRelativeLocation(AttachmentLocation);
+	Mesh->SetRelativeRotation(AttachmentRotation);
 }
 
 void AWeapon::OnPickup()
@@ -117,5 +129,40 @@ void AWeapon::OnFire(APlayerCharacter* TargetCharacter)
 			DrawDebugLine(GetWorld(), Start, End, FColor::Green, true); //Debug Line
 		} 
 	}
+}
+
+void AWeapon::StartADS(APlayerCharacter* TargetCharacter)
+{
+	UCameraComponent* CharacterCamera = TargetCharacter->GetFPSCameraComponent();
+	USkeletalMeshComponent* CharacterMesh = TargetCharacter->GetFPSMesh();
+	if ((CharacterMesh != nullptr) && (CharacterCamera != nullptr))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Mesh valid")); // Debug log
+		
+		FAttachmentTransformRules AttachmentRules(
+			EAttachmentRule::KeepRelative,
+			EAttachmentRule::KeepRelative,
+			EAttachmentRule::KeepRelative,
+			false
+		);
+
+		Mesh->AttachToComponent(CharacterCamera , AttachmentRules);
+		Mesh->SetRelativeLocation(FVector(0.f, 0.f, -19.f)); 
+		Mesh->SetRelativeRotation(FRotator(0.f, -90.f, 0.f)); 
+
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Mesh not valid")); // Debug log
+	}
+	
+}
+
+void AWeapon::StopADS(APlayerCharacter* TargetCharacter)
+{
+	Mesh->DetachFromComponent(FDetachmentTransformRules::KeepRelativeTransform);
+	Mesh->AttachToComponent(Root, FAttachmentTransformRules::SnapToTargetIncludingScale);
+	AttachWeapon(TargetCharacter);
+	
 }
 

@@ -21,7 +21,7 @@ APlayerCharacter::APlayerCharacter()
 	PlayerCamera->bUsePawnControlRotation = true;
 	PlayerCamera->SetRelativeLocation(FVector(10.0f, 0.0f, 85.0f));
 	DefaultFOV = 120.f;
-	AimFOV = 90.f;
+	AimFOV = 75.f;
 	InteractionLength = 300.f;
 	PlayerCamera->SetFieldOfView(DefaultFOV);
 
@@ -31,6 +31,7 @@ APlayerCharacter::APlayerCharacter()
 	FPSMesh->SetOnlyOwnerSee(true);
 	FPSMesh->bCastDynamicShadow = false;
 	FPSMesh->CastShadow = false;
+	FPSMesh->SetRelativeLocation(FVector(-10.f, 0.f, -150.f));
 
 	// Movement
 	DefaultSpeed = 600.f;
@@ -39,7 +40,7 @@ APlayerCharacter::APlayerCharacter()
 
 	// Weapon
 	bHasWeapon = false;
-	bHasRifle = true;
+	bHasRifle = false;
 	CurrentWeapon = nullptr;
 
 	// Other Variables
@@ -156,11 +157,20 @@ void APlayerCharacter::StopSprint()
 void APlayerCharacter::StartADS()
 {
 	PlayerCamera->SetFieldOfView(AimFOV);
+	if (CurrentWeapon != nullptr)
+	{
+		CurrentWeapon->StartADS(this);
+	}
 }
 
 void APlayerCharacter::StopADS()
 {
 	PlayerCamera->SetFieldOfView(DefaultFOV);
+	if (CurrentWeapon != nullptr)
+	{
+		CurrentWeapon->StopADS(this);	
+	}
+	
 }
 
 
@@ -170,6 +180,7 @@ void APlayerCharacter::DropCurrentWeapon()
 	{
 		CurrentWeapon->DetachWeapon();
 		CurrentWeapon = nullptr;
+		
 	}
 }
 

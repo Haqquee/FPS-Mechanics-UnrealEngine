@@ -57,6 +57,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	void AttachWeapon(APlayerCharacter* TargetCharacter);
 
+	virtual void SetAttachmentTransform(); // Adjusts the mesh location (if needed) after it attaches to the character
+
 	void OnPickup();
 
 	void DestroyWeapon();
@@ -68,7 +70,16 @@ public:
 
 	bool OnCharacter;
 
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	void StartADS(APlayerCharacter* TargetCharacter);
+
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	void StopADS(APlayerCharacter* TargetCharacter);
+
 	// Weapon Specific Properties
+
+	FTransform AimSocket;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Poperties")
 	int ClipSize;
 
@@ -77,6 +88,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Poperties")
 	float FireRate;
+
 
 
 };

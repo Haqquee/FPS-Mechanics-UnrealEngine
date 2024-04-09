@@ -11,5 +11,10 @@ UCLASS()
 class SHOOTERMECHANICS_API ARifle : public AWeapon
 {
 	GENERATED_BODY()
+
+public:
+	ARifle();
+
+	virtual void SetAttachmentTransform() override;
 	
 };
