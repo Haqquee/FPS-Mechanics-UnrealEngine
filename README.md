@@ -10,3 +10,7 @@ Video updates of the project: https://www.youtube.com/watch?v=sYh329YvWUA&list=P
 - Created a weapon attachment function that attaches the weapon to the character's hands when equipped.
 - Added physics to the weapons when unequipped or dropped (shown in video).
 - Added a weapon fire functionality and line tracing (as seen in the video) to debug where any projectiles shot from the weapon will travel.
+- Created a new weapon collision channel
+- Implemented weapon pickup system
+- Added an adaptive crosshair that changes based on whether the character is looking at an interactable object or not
+- Implemented a very clunky aim down sights system
