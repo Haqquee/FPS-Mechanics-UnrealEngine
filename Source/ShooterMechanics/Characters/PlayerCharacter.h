@@ -148,6 +148,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool isLookingAtItem;
 
+	class UAIPerceptionStimuliSourceComponent* StimulusSource;
+
+	void SetupStimulusSource(); // For enemy perception
 
 	// Getter/setter functions
 	USkeletalMeshComponent* GetFPSMesh() const;

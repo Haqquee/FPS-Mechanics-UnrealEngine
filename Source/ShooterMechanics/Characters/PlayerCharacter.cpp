@@ -4,6 +4,8 @@
 #include "EnhancedInputSubsystems.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Perception/AIPerceptionStimuliSourceComponent.h"
+#include "Perception/AISense_Sight.h"
 #include "ShooterMechanics\Weapons/Weapon.h"
 
 // Sets default values
@@ -42,6 +44,15 @@ APlayerCharacter::APlayerCharacter()
 	bHasWeapon = false;
 	bHasRifle = false;
 	CurrentWeapon = nullptr;
+
+
+	// Stimulus (For enemy detection)
+	StimulusSource = CreateDefaultSubobject<UAIPerceptionStimuliSourceComponent>(TEXT("Stimulus"));
+	if (StimulusSource != nullptr)
+	{
+		StimulusSource->RegisterForSense(TSubclassOf<UAISense_Sight>());
+		StimulusSource->RegisterWithPerceptionSystem();
+	}
 
 	// Other Variables
 	
@@ -252,6 +263,10 @@ void APlayerCharacter::SpawnEquipHandgun()
 		this->SetHasWeapon(true);
 		CurrentWeapon = NewHandgun;
 	}
+}
+
+void APlayerCharacter::SetupStimulusSource()
+{
 }
 
 // Getter/Setter functions
