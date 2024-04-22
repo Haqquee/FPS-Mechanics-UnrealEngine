@@ -11,14 +11,6 @@ class SHOOTERMECHANICS_API ABasicEnemy : public ACharacter
 
 public:
 
-	// AI
-	UPROPERTY(VisibleAnywhere, Category = AI)
-	class UAIPerceptionComponent* AIPerception;
-
-	class UAISenseConfig_Sight* AISight;
-
-	class UAISenseConfig_Hearing* AIHearing;
-
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Mesh, meta = (AllowPrivateAccess = "true"))
 	class USkeletalMeshComponent* CharacterMesh;
 
@@ -38,7 +30,5 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	UFUNCTION()
-	void OnPerception(AActor* TargetActor, FAIStimulus const Stimulus);
 
 };

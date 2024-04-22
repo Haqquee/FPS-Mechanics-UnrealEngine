@@ -148,6 +148,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool isLookingAtItem;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UAIPerceptionStimuliSourceComponent* StimulusSource;
 
 	void SetupStimulusSource(); // For enemy perception
