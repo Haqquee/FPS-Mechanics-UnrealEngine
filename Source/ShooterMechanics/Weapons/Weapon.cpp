@@ -1,6 +1,8 @@
 #include "Weapon.h"
 #include "ShooterMechanics\Characters/PlayerCharacter.h"
+#include "ShooterMechanics\BasicEnemy.h"
 #include "Camera/CameraComponent.h"
+#include "Engine/DamageEvents.h"
 
 // Sets default values
 AWeapon::AWeapon()
@@ -20,6 +22,7 @@ AWeapon::AWeapon()
 	OnCharacter = false;
 
 	FireRate = 600; // Default fire rate of the weapon class (individual weapons will have a seperate rates)
+	Damage = 40;
 
 	AimSocket = Mesh->GetSocketTransform(FName(TEXT("AimSocket")), ERelativeTransformSpace::RTS_World);
 }
@@ -121,12 +124,24 @@ void AWeapon::OnFire(APlayerCharacter* TargetCharacter)
 		if ((CharacterController != nullptr) && (Muzzle != nullptr))
 		{
 			FHitResult HitResult;
-			FVector Start = Muzzle->GetComponentLocation(); //For debugging purposes (displays the projectiles coming out of the weapon's muzzle)
-			//FVector Start = CharacterController->PlayerCameraManager->GetCameraLocation();
+			FVector DebugLineStart = Muzzle->GetComponentLocation(); //For debugging purposes (displays the projectiles coming out of the weapon's muzzle)
+			FVector Start = CharacterController->PlayerCameraManager->GetCameraLocation();
 			FRotator Rotation = CharacterController->PlayerCameraManager->GetCameraRotation();
 			FVector Direction = Rotation.Vector();
 			FVector End = Start + (Direction * 50000.f);
-			DrawDebugLine(GetWorld(), Start, End, FColor::Green, true); //Debug Line
+			DrawDebugLine(GetWorld(), DebugLineStart, End, FColor::Green, false, 0.5f); //Debug Line
+
+			FCollisionQueryParams CollisionParameters;
+			CollisionParameters.AddIgnoredActor(this);
+			if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility, CollisionParameters))
+			{
+				ABasicEnemy* HitActor = Cast<ABasicEnemy>(HitResult.GetActor());
+				if (HitActor != nullptr)
+				{
+					FDamageEvent DamageEvent;
+					HitActor->TakeDamage(this->Damage, DamageEvent, nullptr, this);
+				}
+			}
 		} 
 	}
 }

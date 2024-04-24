@@ -7,13 +7,17 @@
 #include "BehaviorTree/BehaviorTreeComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "ShooterMechanics\Characters/PlayerCharacter.h"
+#include "Engine/DamageEvents.h"
+#include "Components/CapsuleComponent.h"
 
 
 
 // Sets default values
 ABasicEnemy::ABasicEnemy()
 {
+	//CharacterMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
 
+	GetCapsuleComponent()->SetOwnerNoSee(true);
 	PrimaryActorTick.bCanEverTick = true;
 
 }
@@ -22,6 +26,10 @@ ABasicEnemy::ABasicEnemy()
 void ABasicEnemy::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	// Set Physics and Collision
+	GetCapsuleComponent()->SetCollisionProfileName(TEXT("BlockAllDynamic"));
+	GetMesh()->SetCollisionProfileName(TEXT("CharacterMesh"));
 
 }
 
@@ -37,6 +45,19 @@ void ABasicEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+}
+
+float ABasicEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	Health -= DamageAmount;
+	if (Health <= 0)
+	{
+		GetCapsuleComponent()->Deactivate();
+		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		GetMesh()->SetCollisionProfileName(TEXT("Ragdoll"));
+		GetMesh()->SetSimulatePhysics(true);
+	}
+	return 0.0f;
 }
 
 

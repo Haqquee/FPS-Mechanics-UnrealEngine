@@ -89,6 +89,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Poperties")
 	float FireRate;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Poperties")
+	float Damage;
+
+
+
 
 
 };

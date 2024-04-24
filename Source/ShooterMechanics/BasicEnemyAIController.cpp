@@ -24,7 +24,7 @@ ABasicEnemyAIController::ABasicEnemyAIController()
 
 	// Sight Perception
 	AISight = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("Sight"));
-	AISight->SightRadius = 100.f;
+	AISight->SightRadius = 1000.f;
 	AISight->LoseSightRadius = AISight->SightRadius + 10.f;
 	AISight->PeripheralVisionAngleDegrees = 90.f;
 	AISight->SetMaxAge(5.f);

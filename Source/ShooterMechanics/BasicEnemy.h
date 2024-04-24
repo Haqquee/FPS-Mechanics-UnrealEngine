@@ -11,8 +11,8 @@ class SHOOTERMECHANICS_API ABasicEnemy : public ACharacter
 
 public:
 
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Mesh, meta = (AllowPrivateAccess = "true"))
-	class USkeletalMeshComponent* CharacterMesh;
+	//UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Mesh, meta = (AllowPrivateAccess = "true"))
+	//class USkeletalMeshComponent* CharacterMesh;
 
 
 public:
@@ -30,5 +30,16 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	virtual float TakeDamage
+	(
+		float DamageAmount,
+		struct FDamageEvent const& DamageEvent,
+		class AController* EventInstigator,
+		AActor* DamageCauser
+	) override;
+
+	// Variables
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float Health = 1000.f;
 
 };
