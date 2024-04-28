@@ -116,7 +116,8 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInput->BindAction(SpawnRifle, ETriggerEvent::Triggered, this, &APlayerCharacter::SpawnEquipRifle);
 	PlayerInput->BindAction(SpawnHandgun, ETriggerEvent::Triggered, this, &APlayerCharacter::SpawnEquipHandgun);
 	PlayerInput->BindAction(DropWeapon, ETriggerEvent::Triggered, this, &APlayerCharacter::DropCurrentWeapon);
-	PlayerInput->BindAction(FireAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Fire);
+	PlayerInput->BindAction(FireAction, ETriggerEvent::Started, this, &APlayerCharacter::StartFiring);
+	PlayerInput->BindAction(FireAction, ETriggerEvent::Completed, this, &APlayerCharacter::StopFiring);
 	PlayerInput->BindAction(ADSAction, ETriggerEvent::Started, this, &APlayerCharacter::StartADS);
 	PlayerInput->BindAction(ADSAction, ETriggerEvent::Completed, this, &APlayerCharacter::StopADS);
 
@@ -147,11 +148,22 @@ void APlayerCharacter::Look(const struct FInputActionValue& Value)
 	}
 }
 
-void APlayerCharacter::Fire()
+void APlayerCharacter::StartFiring()
 {
-	if (CurrentWeapon != nullptr)
+	UWorld* const World = GetWorld();
+	if ((CurrentWeapon != nullptr) && (World != nullptr))
 	{
 		CurrentWeapon->OnFire(this);
+		World->GetTimerManager().SetTimer(WeaponFireTimer, this, &APlayerCharacter::StartFiring, CurrentWeapon->FireRateDelay, true);
+	}
+}
+
+void APlayerCharacter::StopFiring()
+{
+	UWorld* const World = GetWorld();
+	if (World != nullptr) 
+	{
+		World->GetTimerManager().ClearTimer(WeaponFireTimer);
 	}
 }
 

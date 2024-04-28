@@ -114,7 +114,10 @@ public:
 	void Move(const struct FInputActionValue& Value);
 
 	UFUNCTION()
-	void Fire();
+	void StartFiring();
+
+	UFUNCTION()
+	void StopFiring();
 
 	void StartSprint();
 
@@ -144,6 +147,9 @@ public:
 	void Pickup();
 
 	FHitResult PerformLineTrace(float Distance);
+
+	
+	FTimerHandle WeaponFireTimer;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool isLookingAtItem;

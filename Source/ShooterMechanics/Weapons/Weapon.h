@@ -90,7 +90,13 @@ public:
 	float FireRate;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Poperties")
+	float FireRateDelay;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Poperties")
 	float Damage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Poperties")
+	float Velocity;
 
 
 

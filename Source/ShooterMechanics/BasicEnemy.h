@@ -40,6 +40,6 @@ public:
 
 	// Variables
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float Health = 1000.f;
+	float Health = 100.f;
 
 };

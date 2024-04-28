@@ -21,7 +21,8 @@ AWeapon::AWeapon()
 
 	OnCharacter = false;
 
-	FireRate = 600; // Default fire rate of the weapon class (individual weapons will have a seperate rates)
+	FireRate = 800.f; // Default fire rate of the weapon class (individual weapons will have a seperate rates)
+	FireRateDelay = 60.f / FireRate;
 	Damage = 40;
 
 	AimSocket = Mesh->GetSocketTransform(FName(TEXT("AimSocket")), ERelativeTransformSpace::RTS_World);
@@ -124,24 +125,38 @@ void AWeapon::OnFire(APlayerCharacter* TargetCharacter)
 		if ((CharacterController != nullptr) && (Muzzle != nullptr))
 		{
 			FHitResult HitResult;
-			FVector DebugLineStart = Muzzle->GetComponentLocation(); //For debugging purposes (displays the projectiles coming out of the weapon's muzzle)
 			FVector Start = CharacterController->PlayerCameraManager->GetCameraLocation();
+			FVector DebugLineStart = Muzzle->GetComponentLocation(); // For debug line
 			FRotator Rotation = CharacterController->PlayerCameraManager->GetCameraRotation();
 			FVector Direction = Rotation.Vector();
 			FVector End = Start + (Direction * 50000.f);
-			DrawDebugLine(GetWorld(), DebugLineStart, End, FColor::Green, false, 0.5f); //Debug Line
 
+			// Single line trace
 			FCollisionQueryParams CollisionParameters;
 			CollisionParameters.AddIgnoredActor(this);
 			if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility, CollisionParameters))
 			{
+				FVector HitLocation = HitResult.Location;
+
+				// For debugging purposes (displays the projectiles coming out of the weapon's muzzle)
+				FVector DebugLineEnd = HitLocation;
+				DrawDebugLine(GetWorld(), DebugLineStart, DebugLineEnd, FColor::Green, false, 0.5f);
+
 				ABasicEnemy* HitActor = Cast<ABasicEnemy>(HitResult.GetActor());
+				
 				if (HitActor != nullptr)
 				{
+					// Deal damage
 					FDamageEvent DamageEvent;
 					HitActor->TakeDamage(this->Damage, DamageEvent, nullptr, this);
 				}
 			}
+			else
+			{
+				// For debugging purposes (displays the projectiles coming out of the weapon's muzzle)
+				DrawDebugLine(GetWorld(), DebugLineStart, End, FColor::Green, false, 0.5f);
+			}
+
 		} 
 	}
 }
