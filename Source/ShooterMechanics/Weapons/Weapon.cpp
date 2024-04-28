@@ -3,6 +3,8 @@
 #include "ShooterMechanics\BasicEnemy.h"
 #include "Camera/CameraComponent.h"
 #include "Engine/DamageEvents.h"
+#include "Particles/ParticleSystem.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AWeapon::AWeapon()
@@ -26,6 +28,7 @@ AWeapon::AWeapon()
 	Damage = 40;
 
 	AimSocket = Mesh->GetSocketTransform(FName(TEXT("AimSocket")), ERelativeTransformSpace::RTS_World);
+	MuzzleSocket = Mesh->GetSocketTransform(FName(TEXT("MuzzleFlash")), ERelativeTransformSpace::RTS_World);
 }
 
 // Called when the game starts or when spawned
@@ -113,20 +116,13 @@ void AWeapon::OnFire(APlayerCharacter* TargetCharacter)
 	{
 		Character = TargetCharacter;
 
-		// Firing Animation
-		UAnimInstance* AnimInstance = Character->GetFPSMesh()->GetAnimInstance();
-		if (AnimInstance != nullptr)
-		{
-			AnimInstance->Montage_Play(FireAnimation, 1.f);
-		}
-
 		// Raycast (traces a line from the weapon's muzzle to the point at which the player is aiming)
 		APlayerController* CharacterController = Cast<APlayerController>(Character->GetController());
 		if ((CharacterController != nullptr) && (Muzzle != nullptr))
 		{
 			FHitResult HitResult;
 			FVector Start = CharacterController->PlayerCameraManager->GetCameraLocation();
-			FVector DebugLineStart = Muzzle->GetComponentLocation(); // For debug line
+			//FVector DebugLineStart = Muzzle->GetComponentLocation(); // For debug line
 			FRotator Rotation = CharacterController->PlayerCameraManager->GetCameraRotation();
 			FVector Direction = Rotation.Vector();
 			FVector End = Start + (Direction * 50000.f);
@@ -139,22 +135,41 @@ void AWeapon::OnFire(APlayerCharacter* TargetCharacter)
 				FVector HitLocation = HitResult.Location;
 
 				// For debugging purposes (displays the projectiles coming out of the weapon's muzzle)
-				FVector DebugLineEnd = HitLocation;
-				DrawDebugLine(GetWorld(), DebugLineStart, DebugLineEnd, FColor::Green, false, 0.5f);
+				//FVector DebugLineEnd = HitLocation;
+				//DrawDebugLine(GetWorld(), DebugLineStart, DebugLineEnd, FColor::Green, false, 0.5f);
 
 				ABasicEnemy* HitActor = Cast<ABasicEnemy>(HitResult.GetActor());
 				
+				// Damage
 				if (HitActor != nullptr)
 				{
-					// Deal damage
 					FDamageEvent DamageEvent;
 					HitActor->TakeDamage(this->Damage, DamageEvent, nullptr, this);
+				}
+
+				// Animation
+				UAnimInstance* AnimInstance = Character->GetFPSMesh()->GetAnimInstance();
+				if (AnimInstance != nullptr)
+				{
+					AnimInstance->Montage_Play(FireAnimation, 1.f);
+				}
+
+				// VFX
+				if (MuzzleFlash != nullptr)
+				{
+					MuzzleSocket = Mesh->GetSocketTransform(FName(TEXT("MuzzleFlash")), ERelativeTransformSpace::RTS_World);
+					UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), MuzzleFlash, MuzzleSocket, true);
+				}
+
+				if (ImpactEffect != nullptr)
+				{
+					UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactEffect, FTransform(HitResult.ImpactNormal.Rotation(), HitResult.Location), true);
 				}
 			}
 			else
 			{
 				// For debugging purposes (displays the projectiles coming out of the weapon's muzzle)
-				DrawDebugLine(GetWorld(), DebugLineStart, End, FColor::Green, false, 0.5f);
+				//DrawDebugLine(GetWorld(), DebugLineStart, End, FColor::Green, false, 0.5f);
 			}
 
 		} 

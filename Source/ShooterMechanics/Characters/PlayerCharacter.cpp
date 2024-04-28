@@ -193,9 +193,7 @@ void APlayerCharacter::StopADS()
 	{
 		CurrentWeapon->StopADS(this);	
 	}
-	
 }
-
 
 void APlayerCharacter::DropCurrentWeapon()
 {
@@ -203,7 +201,6 @@ void APlayerCharacter::DropCurrentWeapon()
 	{
 		CurrentWeapon->DetachWeapon();
 		CurrentWeapon = nullptr;
-		
 	}
 }
 

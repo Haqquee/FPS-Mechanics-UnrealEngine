@@ -40,6 +40,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 	USoundBase* FireSound;
 
+	// Effects
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+	UParticleSystem* MuzzleFlash;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+	UParticleSystem* ImpactEffect;
+
 	// Animation
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 	UAnimMontage* FireAnimation;
@@ -79,6 +86,8 @@ public:
 	// Weapon Specific Properties
 
 	FTransform AimSocket;
+
+	FTransform MuzzleSocket;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Poperties")
 	int ClipSize;
