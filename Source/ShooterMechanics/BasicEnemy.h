@@ -38,6 +38,8 @@ public:
 		AActor* DamageCauser
 	) override;
 
+	// VFX
+
 	// Variables
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float Health = 100.f;

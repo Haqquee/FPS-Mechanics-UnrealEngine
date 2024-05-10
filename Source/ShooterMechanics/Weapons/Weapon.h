@@ -40,12 +40,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 	USoundBase* FireSound;
 
-	// Effects
+	// VFX
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 	UParticleSystem* MuzzleFlash;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 	UParticleSystem* ImpactEffect;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UParticleSystem* BloodImpact_Default;
 
 	// Animation
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
@@ -75,6 +78,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	void OnFire(APlayerCharacter* TargetCharacter);
 
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	void Reload();
+
 	bool OnCharacter;
 
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
@@ -92,8 +98,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Poperties")
 	int ClipSize;
 
+	int CurrentClip;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Poperties")
 	int MaxAmmo;
+
+	int CurrentAmmo;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Poperties")
 	float FireRate;

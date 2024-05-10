@@ -22,7 +22,7 @@ APlayerCharacter::APlayerCharacter()
 	PlayerCamera->SetupAttachment(GetCapsuleComponent());
 	PlayerCamera->bUsePawnControlRotation = true;
 	PlayerCamera->SetRelativeLocation(FVector(10.0f, 0.0f, 85.0f));
-	DefaultFOV = 120.f;
+	DefaultFOV = 110.f;
 	AimFOV = 75.f;
 	InteractionLength = 300.f;
 	PlayerCamera->SetFieldOfView(DefaultFOV);
@@ -78,6 +78,13 @@ void APlayerCharacter::BeginPlay()
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
 	}
+
+	if (CurrentWeapon != nullptr)
+	{
+		bHasWeapon = true;
+		bHasRifle = true;
+	}
+
 }
 
 // Called every frame
@@ -180,19 +187,19 @@ void APlayerCharacter::StopSprint()
 void APlayerCharacter::StartADS()
 {
 	PlayerCamera->SetFieldOfView(AimFOV);
-	if (CurrentWeapon != nullptr)
-	{
-		CurrentWeapon->StartADS(this);
-	}
+	//if (CurrentWeapon != nullptr)
+	//{
+	//	CurrentWeapon->StartADS(this);
+	//}
 }
 
 void APlayerCharacter::StopADS()
 {
 	PlayerCamera->SetFieldOfView(DefaultFOV);
-	if (CurrentWeapon != nullptr)
-	{
-		CurrentWeapon->StopADS(this);	
-	}
+	//if (CurrentWeapon != nullptr)
+	//{
+	//	CurrentWeapon->StopADS(this);	
+	//}
 }
 
 void APlayerCharacter::DropCurrentWeapon()
@@ -201,6 +208,8 @@ void APlayerCharacter::DropCurrentWeapon()
 	{
 		CurrentWeapon->DetachWeapon();
 		CurrentWeapon = nullptr;
+		bHasWeapon = false;
+		bHasRifle = false;
 	}
 }
 
@@ -210,7 +219,6 @@ void APlayerCharacter::Pickup()
 	{
 		// Weapon pickup
 		FHitResult ItemHitResult = PerformLineTrace(InteractionLength);
-		//UE_LOG(LogTemp, Warning, TEXT("Hit actor class: %s"), *ItemHitResult.GetActor()->GetClass()->GetName()); // Debug line
 		AWeapon* Weapon = Cast<AWeapon>(ItemHitResult.GetActor());
 		if (Weapon != nullptr)
 		{
@@ -224,6 +232,9 @@ void APlayerCharacter::Pickup()
 				this->DropCurrentWeapon();
 				Weapon->AttachWeapon(this);
 			}
+
+			bHasWeapon = true;
+			bHasRifle = true;
 		}
 
 	}
@@ -255,6 +266,8 @@ void APlayerCharacter::SpawnEquipRifle()
 		NewRifle->AttachWeapon(this);
 		this->SetHasWeapon(true);
 		CurrentWeapon = NewRifle;
+		bHasWeapon = true;
+		bHasRifle = true;
 	}
 }
 
@@ -271,6 +284,7 @@ void APlayerCharacter::SpawnEquipHandgun()
 		NewHandgun->AttachWeapon(this);
 		this->SetHasWeapon(true);
 		CurrentWeapon = NewHandgun;
+		bHasWeapon = true;
 	}
 }
 

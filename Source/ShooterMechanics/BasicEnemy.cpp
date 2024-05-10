@@ -9,6 +9,8 @@
 #include "ShooterMechanics\Characters/PlayerCharacter.h"
 #include "Engine/DamageEvents.h"
 #include "Components/CapsuleComponent.h"
+#include "Particles/ParticleSystem.h"
+#include "Kismet/GameplayStatics.h"
 
 
 
@@ -50,6 +52,7 @@ void ABasicEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 float ABasicEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	Health -= DamageAmount;
+
 	if (Health <= 0)
 	{
 		GetCapsuleComponent()->Deactivate();
@@ -57,6 +60,8 @@ float ABasicEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEven
 		GetMesh()->SetCollisionProfileName(TEXT("Ragdoll"));
 		GetMesh()->SetSimulatePhysics(true);
 	}
+
+	
 	return 0.0f;
 }
 

@@ -23,9 +23,14 @@ AWeapon::AWeapon()
 
 	OnCharacter = false;
 
+	// Default Variables
 	FireRate = 800.f; // Default fire rate of the weapon class (individual weapons will have a seperate rates)
 	FireRateDelay = 60.f / FireRate;
 	Damage = 40;
+	ClipSize = 32;
+	CurrentClip = ClipSize;
+	MaxAmmo = 320;
+	CurrentAmmo = MaxAmmo;
 
 	AimSocket = Mesh->GetSocketTransform(FName(TEXT("AimSocket")), ERelativeTransformSpace::RTS_World);
 	MuzzleSocket = Mesh->GetSocketTransform(FName(TEXT("MuzzleFlash")), ERelativeTransformSpace::RTS_World);
@@ -140,11 +145,23 @@ void AWeapon::OnFire(APlayerCharacter* TargetCharacter)
 
 				ABasicEnemy* HitActor = Cast<ABasicEnemy>(HitResult.GetActor());
 				
-				// Damage
+				// If an enemy actor is hit
 				if (HitActor != nullptr)
 				{
 					FDamageEvent DamageEvent;
 					HitActor->TakeDamage(this->Damage, DamageEvent, nullptr, this);
+
+					if (BloodImpact_Default != nullptr)
+					{
+						UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), BloodImpact_Default, FTransform(HitResult.ImpactNormal.Rotation(), HitResult.Location), true);
+					}
+				}
+				else
+				{
+					if (ImpactEffect != nullptr)
+					{
+						UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactEffect, FTransform(HitResult.ImpactNormal.Rotation(), HitResult.Location), true);
+					}
 				}
 
 				// Animation
@@ -160,11 +177,7 @@ void AWeapon::OnFire(APlayerCharacter* TargetCharacter)
 					MuzzleSocket = Mesh->GetSocketTransform(FName(TEXT("MuzzleFlash")), ERelativeTransformSpace::RTS_World);
 					UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), MuzzleFlash, MuzzleSocket, true);
 				}
-
-				if (ImpactEffect != nullptr)
-				{
-					UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactEffect, FTransform(HitResult.ImpactNormal.Rotation(), HitResult.Location), true);
-				}
+				
 			}
 			else
 			{
@@ -173,6 +186,24 @@ void AWeapon::OnFire(APlayerCharacter* TargetCharacter)
 			}
 
 		} 
+	}
+}
+
+void AWeapon::Reload()
+{
+	if (CurrentAmmo != 0)
+	{
+		if (CurrentAmmo >= ClipSize)
+		{
+			CurrentAmmo = CurrentAmmo - (ClipSize - CurrentClip);
+			CurrentClip = ClipSize;
+			
+		}
+		else
+		{
+			CurrentAmmo = 0;
+			CurrentClip = CurrentAmmo;
+		}
 	}
 }
 
