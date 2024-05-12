@@ -44,6 +44,7 @@ APlayerCharacter::APlayerCharacter()
 	bHasWeapon = false;
 	bHasRifle = false;
 	CurrentWeapon = nullptr;
+	bIsSprinting = false;
 
 
 	// Stimulus (For enemy detection)
@@ -177,11 +178,13 @@ void APlayerCharacter::StopFiring()
 void APlayerCharacter::StartSprint()
 {
 	GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
+	bIsSprinting = true;
 }
 
 void APlayerCharacter::StopSprint()
 {
 	GetCharacterMovement()->MaxWalkSpeed = DefaultSpeed;
+	bIsSprinting = false;
 }
 
 void APlayerCharacter::StartADS()

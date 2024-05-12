@@ -90,8 +90,11 @@ void AWeapon::SetAttachmentTransform()
 {
 	// Base implementation, no default behaviour
 	// For testing purposes, using the values for Rifle
-	FVector AttachmentLocation = FVector(0.f, 7.5f, 2.5f);
-	FRotator AttachmentRotation = FRotator(15.f, -5.f, 0.f);
+	// FVector AttachmentLocation = FVector(0.f, 7.5f, 2.5f);
+	// FRotator AttachmentRotation = FRotator(15.f, -5.f, 0.f);
+
+	FVector AttachmentLocation = FVector(0.f, 0.f, 0.f);
+	FRotator AttachmentRotation = FRotator(0.f, 0.f, 0.f);
 
 	Mesh->SetRelativeLocation(AttachmentLocation);
 	Mesh->SetRelativeRotation(AttachmentRotation);

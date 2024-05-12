@@ -121,6 +121,9 @@ public:
 
 	void StartSprint();
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bIsSprinting;
+
 	void StopSprint();
 
 	void StartADS();
